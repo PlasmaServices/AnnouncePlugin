@@ -1,0 +1,24 @@
+name: LayeredyAnnounce
+version: 1.0.0
+main: services.plasma.layeredyannounce.LayeredyAnnouncePlugin
+api-version: 1.20
+authors:
+  - Plasma Services
+  - Layeredy Software
+website: https://plasma.services
+description: Layeredy Announce integration for Minecraft servers
+
+commands:
+  layeredyannounce:
+    description: Main command for Layeredy Announce
+    aliases: [announce, lannounce]
+    usage: /<command> [reload|status|test]
+    permission: layeredyannounce.admin
+
+permissions:
+  layeredyannounce.admin:
+    description: Allows access to Layeredy Announce admin commands
+    default: op
+  layeredyannounce.see:
+    description: Allows players to see announcements
+    default: true

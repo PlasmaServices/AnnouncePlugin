@@ -1,0 +1,39 @@
+# LayeredyAnnounce Configuration
+# Plugin by plasma.services
+#
+# This plugin integrates with Layeredy Announce service to display
+# announcements as boss bars in your Minecraft server.
+
+# Enable or disable the plugin functionality
+enabled: true
+
+# Your Layeredy Announce user ID
+# Get this from your Announce dashboard at https://announce.layeredy.com/
+# Format: usr_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+user-id: "usr_test_1234567890"
+
+# How often to check for new announcements (in seconds)
+# Minimum: 30 seconds
+check-interval: 60
+
+# Layeredy Announce API URL
+# Default: "https://announce.layeredy.com/api/announce"
+# The plugin will append "/{user_id}" to this URL
+api-url: "https://announce.layeredy.com/api/announce"
+
+# Boss bar settings
+bossbar:
+  # How long to display each announcement (in seconds)
+  # Minimum: 5 seconds
+  duration: 60
+
+  # Boss bar color
+  # Options: BLUE, GREEN, PINK, PURPLE, RED, WHITE, YELLOW
+  color: "BLUE"
+
+  # Boss bar style
+  # Options: SOLID, SEGMENTED_6, SEGMENTED_10, SEGMENTED_12, SEGMENTED_20
+  style: "SOLID"
+
+# Enable debug logging
+debug: false
