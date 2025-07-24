@@ -331,7 +331,6 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 ### Plugin Support
 - **Issues**: [GitHub Issues](https://github.com/plasma-services/layeredy-announce-plugin/issues)
 - **Discord**: [plasma.services Discord](https://discord.gg/plasma-services)
-- **Email**: [support@plasma.services](mailto:support@plasma.services)
 
 ### Layeredy Announce Service
 - **Website**: [announce.layeredy.com](https://announce.layeredy.com/)
