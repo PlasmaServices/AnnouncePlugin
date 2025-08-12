@@ -1,18 +1,17 @@
 package services.plasma.layeredyannounce.commands;
 
+import co.aikar.commands.BaseCommand;
+import co.aikar.commands.CommandHelp;
+import co.aikar.commands.annotation.*;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import services.plasma.layeredyannounce.LayeredyAnnouncePlugin;
 import services.plasma.layeredyannounce.models.Announcement;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-public class AnnounceCommand implements CommandExecutor, TabCompleter {
+@CommandAlias("layeredyannounce|announce|lannounce")
+@Description("Layeredy Announce plugin commands")
+@CommandPermission("layeredyannounce.admin")
+public class AnnounceCommand extends BaseCommand {
 
     private final LayeredyAnnouncePlugin plugin;
 
@@ -20,61 +19,25 @@ public class AnnounceCommand implements CommandExecutor, TabCompleter {
         this.plugin = plugin;
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("layeredyannounce.admin")) {
-            sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
-            return true;
-        }
-
-        if (args.length == 0) {
-            sendHelpMessage(sender);
-            return true;
-        }
-
-        String subCommand = args[0].toLowerCase();
-
-        switch (subCommand) {
-            case "reload":
-                handleReload(sender);
-                break;
-
-            case "status":
-                handleStatus(sender);
-                break;
-
-            case "test":
-                handleTest(sender);
-                break;
-
-            case "check":
-                handleCheck(sender);
-                break;
-
-            case "clear":
-                handleClear(sender);
-                break;
-
-            case "debug":
-                handleDebug(sender, args);
-                break;
-
-            case "help":
-            default:
-                sendHelpMessage(sender);
-                break;
-        }
-
-        return true;
+    @Default
+    @HelpCommand
+    @Subcommand("help")
+    @Description("Show help for LayeredyAnnounce commands")
+    public void help(CommandSender sender, CommandHelp help) {
+        help.showHelp();
     }
 
-    private void handleReload(CommandSender sender) {
+    @Subcommand("reload")
+    @Description("Reload the plugin configuration")
+    public void onReload(CommandSender sender) {
         sender.sendMessage(ChatColor.YELLOW + "Reloading LayeredyAnnounce configuration...");
         plugin.reload();
         sender.sendMessage(ChatColor.GREEN + "Configuration reloaded successfully!");
     }
 
-    private void handleStatus(CommandSender sender) {
+    @Subcommand("status")
+    @Description("Show detailed plugin status")
+    public void onStatus(CommandSender sender) {
         sender.sendMessage(ChatColor.GOLD + "=== LayeredyAnnounce Status ===");
         sender.sendMessage(ChatColor.GRAY + "Enabled: " + (plugin.getConfigManager().isEnabled() ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No"));
         sender.sendMessage(ChatColor.GRAY + "User ID: " + ChatColor.WHITE + plugin.getConfigManager().getUserId());
@@ -89,7 +52,9 @@ public class AnnounceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.GRAY + "Debug Mode: " + (plugin.getConfigManager().isDebugEnabled() ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No"));
     }
 
-    private void handleTest(CommandSender sender) {
+    @Subcommand("test")
+    @Description("Test API connection and display a sample boss bar")
+    public void onTest(CommandSender sender) {
         sender.sendMessage(ChatColor.YELLOW + "Testing connection to Layeredy Announce API...");
 
         plugin.getAnnouncementManager().testConnection()
@@ -115,7 +80,9 @@ public class AnnounceCommand implements CommandExecutor, TabCompleter {
         });
     }
 
-    private void handleCheck(CommandSender sender) {
+    @Subcommand("check")
+    @Description("Manually check for new announcements")
+    public void onCheck(CommandSender sender) {
         sender.sendMessage(ChatColor.YELLOW + "Manually checking for announcements...");
 
         plugin.getAnnouncementManager().checkForAnnouncements()
@@ -132,63 +99,26 @@ public class AnnounceCommand implements CommandExecutor, TabCompleter {
                 });
     }
 
-    private void handleClear(CommandSender sender) {
+    @Subcommand("clear")
+    @Description("Clear all active boss bars and announcement cache")
+    public void onClear(CommandSender sender) {
         plugin.getBossBarManager().clearAllBossBars();
         plugin.getAnnouncementManager().clearShownAnnouncements();
         sender.sendMessage(ChatColor.GREEN + "Cleared all boss bars and announcement cache!");
     }
 
-    private void handleDebug(CommandSender sender, String[] args) {
-        if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "Usage: /layeredyannounce debug <on|off>");
-            return;
-        }
-
-        String mode = args[1].toLowerCase();
-        if (mode.equals("on") || mode.equals("true")) {
+    @Subcommand("debug")
+    @Description("Toggle debug mode on or off")
+    @CommandCompletion("on|off")
+    public void onDebug(CommandSender sender, @Values("on,off") String mode) {
+        if (mode.equalsIgnoreCase("on") || mode.equalsIgnoreCase("true")) {
             plugin.getConfigManager().setDebugEnabled(true);
             sender.sendMessage(ChatColor.GREEN + "Debug mode enabled!");
-        } else if (mode.equals("off") || mode.equals("false")) {
+        } else if (mode.equalsIgnoreCase("off") || mode.equalsIgnoreCase("false")) {
             plugin.getConfigManager().setDebugEnabled(false);
             sender.sendMessage(ChatColor.GREEN + "Debug mode disabled!");
         } else {
             sender.sendMessage(ChatColor.RED + "Usage: /layeredyannounce debug <on|off>");
         }
-    }
-
-    private void sendHelpMessage(CommandSender sender) {
-        sender.sendMessage(ChatColor.GOLD + "=== LayeredyAnnounce Commands ===");
-        sender.sendMessage(ChatColor.YELLOW + "/layeredyannounce reload" + ChatColor.GRAY + " - Reload configuration");
-        sender.sendMessage(ChatColor.YELLOW + "/layeredyannounce status" + ChatColor.GRAY + " - Show plugin status");
-        sender.sendMessage(ChatColor.YELLOW + "/layeredyannounce test" + ChatColor.GRAY + " - Test API connection and boss bar");
-        sender.sendMessage(ChatColor.YELLOW + "/layeredyannounce check" + ChatColor.GRAY + " - Manually check for announcements");
-        sender.sendMessage(ChatColor.YELLOW + "/layeredyannounce clear" + ChatColor.GRAY + " - Clear all boss bars and cache");
-        sender.sendMessage(ChatColor.YELLOW + "/layeredyannounce debug <on|off>" + ChatColor.GRAY + " - Toggle debug mode");
-        sender.sendMessage(ChatColor.YELLOW + "/layeredyannounce help" + ChatColor.GRAY + " - Show this help message");
-        sender.sendMessage(ChatColor.GRAY + "Plugin by " + ChatColor.WHITE + "plasma.services");
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (!sender.hasPermission("layeredyannounce.admin")) {
-            return new ArrayList<>();
-        }
-
-        if (args.length == 1) {
-            List<String> subCommands = Arrays.asList("reload", "status", "test", "check", "clear", "debug", "help");
-            List<String> completions = new ArrayList<>();
-
-            for (String subCommand : subCommands) {
-                if (subCommand.toLowerCase().startsWith(args[0].toLowerCase())) {
-                    completions.add(subCommand);
-                }
-            }
-
-            return completions;
-        } else if (args.length == 2 && args[0].equalsIgnoreCase("debug")) {
-            return Arrays.asList("on", "off");
-        }
-
-        return new ArrayList<>();
     }
 }

@@ -1,5 +1,6 @@
 package services.plasma.layeredyannounce;
 
+import co.aikar.commands.BukkitCommandManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import services.plasma.layeredyannounce.commands.AnnounceCommand;
 import services.plasma.layeredyannounce.managers.AnnouncementManager;
@@ -13,6 +14,7 @@ public class LayeredyAnnouncePlugin extends JavaPlugin {
     private AnnouncementManager announcementManager;
     private BossBarManager bossBarManager;
     private AnnouncementTask announcementTask;
+    private BukkitCommandManager commandManager;
 
     @Override
     public void onEnable() {
@@ -24,7 +26,11 @@ public class LayeredyAnnouncePlugin extends JavaPlugin {
 
         configManager.loadConfig();
 
-        getCommand("layeredyannounce").setExecutor(new AnnounceCommand(this));
+        this.commandManager = new BukkitCommandManager(this);
+
+        commandManager.registerCommand(new AnnounceCommand(this));
+
+        commandManager.enableUnstableAPI("help");
 
         getServer().getPluginManager().registerEvents(new services.plasma.layeredyannounce.listeners.PlayerListener(this), this);
 
@@ -45,6 +51,10 @@ public class LayeredyAnnouncePlugin extends JavaPlugin {
 
         if (bossBarManager != null) {
             bossBarManager.clearAllBossBars();
+        }
+
+        if (commandManager != null) {
+            commandManager.unregisterCommands();
         }
 
         getLogger().info("LayeredyAnnounce has been disabled!");
